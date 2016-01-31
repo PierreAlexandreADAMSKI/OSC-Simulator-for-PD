@@ -1,0 +1,19 @@
+#N canvas 243 227 353 248 10;
+#X obj 115 22 dumpOSC 57110;
+#X obj 115 121 osc~;
+#X obj 115 181 dac~;
+#X obj 115 149 *~;
+#X obj 115 50 print OSC;
+#X obj 115 71 OSCroute /test1;
+#X obj 233 78 vsl 15 40 0 1 0 0 empty empty empty 0 -9 0 10 -262144
+-1 -1 3900 1;
+#X obj 115 98 nbx 5 14 -1e+37 1e+37 0 0 empty empty empty 0 -8 0 10
+-262144 -1 -1 70 256;
+#X connect 0 0 4 0;
+#X connect 0 0 5 0;
+#X connect 1 0 3 0;
+#X connect 3 0 2 1;
+#X connect 3 0 2 0;
+#X connect 5 0 1 0;
+#X connect 5 0 7 0;
+#X connect 6 0 3 1;
