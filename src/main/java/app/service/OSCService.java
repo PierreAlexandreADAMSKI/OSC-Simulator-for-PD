@@ -1,16 +1,15 @@
 package app.service;
 
-import com.illposed.osc.OSCBundle;
-import com.illposed.osc.OSCMessage;
-import com.illposed.osc.OSCPacket;
-import com.illposed.osc.OSCPortOut;
+import app.listeners.SimpleOSCListener;
+import com.illposed.osc.*;
 
 import java.io.IOException;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.Date;
 
 /**
  * app.service Created by Pierre-Alexandre Adamski on 30/01/2016.
@@ -19,14 +18,25 @@ public class OSCService {
 
 	public static int UDP_PORT;
 	private OSCPortOut portOut;
+	private OSCPortIn portIn;
 
-	public OSCService() throws UnknownHostException, SocketException {
-		this.portOut = new OSCPortOut();
+	public OSCService(Way way) throws UnknownHostException, SocketException {
+		if (way == Way.OUT) {
+			portOut = new OSCPortOut();
+		}
+		if (way == Way.IN){
+			portIn = new OSCPortIn(OSCPort.DEFAULT_SC_OSC_PORT);
+		}
 	}
 
-	public OSCService(int port) throws UnknownHostException, SocketException {
+	public OSCService(int port, Way way) throws UnknownHostException, SocketException {
 		UDP_PORT = port;
-		this.portOut = new OSCPortOut(InetAddress.getLocalHost(), UDP_PORT);
+		if (way == Way.OUT) {
+			portOut = new OSCPortOut(InetAddress.getLocalHost(), UDP_PORT);
+		}
+		if (way == Way.IN){
+			portIn = new OSCPortIn(UDP_PORT);
+		}
 	}
 
 	public void sendMe(OSCMessage... messages) throws IOException {
@@ -39,4 +49,12 @@ public class OSCService {
 		portOut.send(message);
 
 	}
+
+	//TODO works once in a while
+	public void receiveMe(String tag) throws InterruptedException {
+		OSCListener listener = (date, oscMessage) -> System.out.println("message received");
+		portIn.addListener(tag, listener);
+		portIn.startListening();
+	}
+
 }

@@ -3,23 +3,28 @@ package app;
 import app.service.OSCService;
 import app.service.StageService;
 import app.service.ViewService;
+import app.service.Way;
 import com.illposed.osc.OSCPort;
 import javafx.application.Application;
 import javafx.stage.Stage;
-
-import java.net.InetAddress;
+import oscP5.OscIn;
+import oscP5.OscP5;
 
 /**
  * app Created by Pierre-Alexandre Adamski on 30/01/2016.
  */
 public class OSCApp extends Application {
 
-	public static OSCService oscService;
+	public static OSCService oscServiceOut;
+	public static OSCService oscServiceIn;
 
 
 	public static void main(String[] args) throws Exception {
 		//localHost on default OSC port 
-		oscService = new OSCService(OSCPort.DEFAULT_SC_OSC_PORT);
+		oscServiceOut = new OSCService(OSCPort.DEFAULT_SC_OSC_PORT, Way.OUT);
+		oscServiceIn = new OSCService(OSCPort.DEFAULT_SC_OSC_PORT, Way.IN);
+
+		//TODO try oscp5 it might be more stable
 		launch(args); // for javaFx
 	}
 
