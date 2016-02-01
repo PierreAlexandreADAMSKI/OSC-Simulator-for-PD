@@ -20,16 +20,17 @@ public class OSCService {
 	private OSCPortOut portOut;
 	private OSCPortIn portIn;
 
-	public OSCService(Way way) throws UnknownHostException, SocketException {
+	public OSCService(Way way) throws Throwable {
 		if (way == Way.OUT) {
 			portOut = new OSCPortOut();
 		}
 		if (way == Way.IN){
 			portIn = new OSCPortIn(OSCPort.DEFAULT_SC_OSC_PORT);
 		}
+		finalize();
 	}
 
-	public OSCService(int port, Way way) throws UnknownHostException, SocketException {
+	public OSCService(int port, Way way) throws Throwable {
 		UDP_PORT = port;
 		if (way == Way.OUT) {
 			portOut = new OSCPortOut(InetAddress.getLocalHost(), UDP_PORT);
@@ -37,6 +38,8 @@ public class OSCService {
 		if (way == Way.IN){
 			portIn = new OSCPortIn(UDP_PORT);
 		}
+
+		finalize();
 	}
 
 	public void sendMe(OSCMessage... messages) throws IOException {
@@ -52,7 +55,17 @@ public class OSCService {
 
 	//TODO works once in a while
 	public void receiveMe(String tag) throws InterruptedException {
-		OSCListener listener = (date, oscMessage) -> System.out.println("message received");
+		final OSCListener listener = (date, oscMessage) -> {
+			System.out.println("message received, addr :" + oscMessage.getAddress() + " arg0 : " + oscMessage.getArguments().get(0));
+			Thread play = new Thread( new SoundService((String) oscMessage.getArguments().get(0)) );
+				play.setDaemon(true);
+				play.start();
+			try {
+				Thread.sleep(SoundService.sampleLenght);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		};
 		portIn.addListener(tag, listener);
 		portIn.startListening();
 	}

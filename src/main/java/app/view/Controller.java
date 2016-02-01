@@ -3,7 +3,9 @@ package app.view;
 import app.OSCApp;
 import app.service.OSCService;
 import app.service.SoundService;
+import app.service.Way;
 import com.illposed.osc.OSCMessage;
+import com.illposed.osc.OSCPort;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuItem;
@@ -49,21 +51,18 @@ public class Controller {
 		try {
 			if (currentInstance instanceof Integer){
 				currentInstance = Integer.valueOf(arg0Field.getText());
-				OSCApp.oscServiceOut.sendMe(tagField.getText(), currentInstance);
+				OSCApp.serviceOut.sendMe(tagField.getText(), currentInstance);
 			}
 			if (currentInstance instanceof Float){
 				currentInstance = Float.valueOf(arg0Field.getText());
-				OSCApp.oscServiceOut.sendMe(tagField.getText(), currentInstance);
+				OSCApp.serviceOut.sendMe(tagField.getText(), currentInstance);
 			}
 			if (currentInstance instanceof String){
-				OSCApp.oscServiceOut.sendMe(tagField.getText(), arg0Field.getText());
-				OSCApp.oscServiceIn.receiveMe(tagField.getText());
-				/*Thread play = new Thread( new SoundService((String) message.getArguments().get(0)) );
-				play.setDaemon(true);
-				play.start();*/
+				OSCApp.serviceOut.sendMe(tagField.getText(), arg0Field.getText());
+				OSCApp.serviceIn.receiveMe(tagField.getText());
 			}
-		} catch (IOException | InterruptedException e) {
-			e.printStackTrace();
+		} catch (Throwable throwable) {
+			throwable.printStackTrace();
 		}
 	}
 }

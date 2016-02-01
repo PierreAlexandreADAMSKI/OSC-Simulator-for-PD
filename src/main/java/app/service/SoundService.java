@@ -13,6 +13,7 @@ import javax.sound.sampled.Clip;
 public class SoundService extends Task<Void>{
 
 	private String name;
+	public static long sampleLenght;
 
 	public SoundService(String name) {
 		this.name = name;
@@ -23,6 +24,7 @@ public class SoundService extends Task<Void>{
 		AudioInputStream audioIn = AudioSystem.getAudioInputStream(OSCApp.class.getResource("service/" + this.name + ".wav"));
 		Clip clip = AudioSystem.getClip();
 		clip.open(audioIn);
+		sampleLenght = clip.getMicrosecondLength();
 		clip.start();
 		return null;
 	}
