@@ -19,7 +19,7 @@ public class OSCApp extends Application {
 
 	public static void main(String[] args) throws Throwable {
 		serviceOut = new OSCService(OSCPort.DEFAULT_SC_OSC_PORT, Way.OUT);
-		serviceIn = new OSCService(OSCPort.DEFAULT_SC_OSC_PORT, Way.IN);
+		serviceIn = new OSCService(57120, Way.IN);
 		//TODO try oscp5 it might be more stable
 		launch(args); // for javaFx
 	}

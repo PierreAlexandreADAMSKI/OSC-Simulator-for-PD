@@ -58,7 +58,8 @@ public class Controller {
 				OSCApp.serviceOut.sendMe(tagField.getText(), currentInstance);
 			}
 			if (currentInstance instanceof String){
-				OSCApp.serviceOut.sendMe(tagField.getText(), arg0Field.getText());
+				final OSCService oscServiceOut = new OSCService(57120, Way.OUT);
+				oscServiceOut.sendMe(tagField.getText(), arg0Field.getText());
 				OSCApp.serviceIn.receiveMe(tagField.getText());
 			}
 		} catch (Throwable throwable) {
