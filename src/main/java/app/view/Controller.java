@@ -1,6 +1,8 @@
 package app.view;
 
 import app.OSCApp;
+import app.exceptions.OSCReceiveException;
+import app.exceptions.OSCSendException;
 import app.service.OSCService;
 import app.service.SoundService;
 import app.service.Way;
@@ -37,7 +39,7 @@ public class Controller {
 
 
 	@FXML
-	private void initialize(){
+	private void initialize() {
 		portText.setText(String.valueOf(OSCService.UDP_PORT));
 		integerItem.setOnAction(event -> currentInstance = 0);
 		floatItem.setOnAction(event -> currentInstance = 0.f);
@@ -47,23 +49,28 @@ public class Controller {
 	private Object currentInstance;
 
 	@FXML
-	private void handleSendButton(){
+	private void handleSendButton() throws OSCSendException, OSCReceiveException{
 		try {
-			if (currentInstance instanceof Integer){
+			if (currentInstance instanceof Integer) {
 				currentInstance = Integer.valueOf(arg0Field.getText());
 				OSCApp.serviceOut.sendMe(tagField.getText(), currentInstance);
 			}
-			if (currentInstance instanceof Float){
+			if (currentInstance instanceof Float) {
 				currentInstance = Float.valueOf(arg0Field.getText());
 				OSCApp.serviceOut.sendMe(tagField.getText(), currentInstance);
 			}
-			if (currentInstance instanceof String){
+		} catch (Throwable e) {
+			throw new OSCSendException("OSCSendException :", e);
+		}
+		try {
+			if (currentInstance instanceof String) {
 				final OSCService oscServiceOut = new OSCService(57120, Way.OUT);
 				oscServiceOut.sendMe(tagField.getText(), arg0Field.getText());
 				OSCApp.serviceIn.receiveMe(tagField.getText());
 			}
-		} catch (Throwable throwable) {
-			throwable.printStackTrace();
+		} catch (Throwable e){
+			throw new OSCReceiveException("OSCReceiveException", e);
 		}
+
 	}
 }

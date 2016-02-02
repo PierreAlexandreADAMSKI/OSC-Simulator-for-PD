@@ -1,6 +1,7 @@
 package app.service;
 
 import app.OSCApp;
+import app.exceptions.UIException;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
@@ -10,7 +11,7 @@ import java.net.URL;
 
 public class ViewService {
 
-	public static void showPrimary(URL url) { //create Exceptions!!!
+	public static void showPrimary(URL url) throws UIException{ //create Exceptions!!!
 		try {
 			final FXMLLoader loader = new FXMLLoader(url);
 			final AnchorPane anchorPane = loader.load();
@@ -19,7 +20,7 @@ public class ViewService {
 			StageService.getInstance().getPrimaryStage().setScene(scene);
 			StageService.getInstance().getPrimaryStage().show();
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw new UIException("UIException :\nCheck resources paths", e);
 		}
 	}
 

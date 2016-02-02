@@ -1,15 +1,12 @@
 package app.service;
 
-import app.listeners.SimpleOSCListener;
+import app.exceptions.OSCReceiveException;
+import app.exceptions.OSCReceiveInterruptedException;
 import com.illposed.osc.*;
 
 import java.io.IOException;
-import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.Arrays;
-import java.util.Date;
 
 /**
  * app.service Created by Pierre-Alexandre Adamski on 30/01/2016.
@@ -24,7 +21,7 @@ public class OSCService {
 		if (way == Way.OUT) {
 			portOut = new OSCPortOut();
 		}
-		if (way == Way.IN){
+		if (way == Way.IN) {
 			portIn = new OSCPortIn(OSCPort.DEFAULT_SC_OSC_PORT);
 		}
 		finalize();
@@ -35,7 +32,7 @@ public class OSCService {
 		if (way == Way.OUT) {
 			portOut = new OSCPortOut(InetAddress.getLocalHost(), UDP_PORT);
 		}
-		if (way == Way.IN){
+		if (way == Way.IN) {
 			portIn = new OSCPortIn(UDP_PORT);
 		}
 
@@ -54,20 +51,23 @@ public class OSCService {
 	}
 
 	//TODO works once in a while
-	public void receiveMe(String tag) throws InterruptedException {
+	public void receiveMe(String tag) throws OSCReceiveInterruptedException {
 		final OSCListener listener = (date, oscMessage) -> {
 			System.out.println("message received, addr :" + oscMessage.getAddress() + " arg0 : " + oscMessage.getArguments().get(0));
-			Thread play = new Thread( new SoundService((String) oscMessage.getArguments().get(0)) );
-				play.setDaemon(true);
-				play.start();
+			Thread play = new Thread(new SoundService((String) oscMessage.getArguments().get(0)));
+			play.setDaemon(true);
+			play.start();
 			try {
 				Thread.sleep(SoundService.sampleLenght);
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+				try {
+					throw new OSCReceiveInterruptedException("OSC reception interrupted :");
+				} catch (OSCReceiveInterruptedException e1) {
+					e1.printStackTrace();
+				}
 			}
 		};
 		portIn.addListener(tag, listener);
 		portIn.startListening();
 	}
-
 }
