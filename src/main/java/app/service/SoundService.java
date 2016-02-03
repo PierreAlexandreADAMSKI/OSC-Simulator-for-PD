@@ -23,7 +23,7 @@ public class SoundService extends Task<Void> {
 	protected Void call() throws AudioException {
 		AudioInputStream audioIn = null;
 		try {
-			audioIn = AudioSystem.getAudioInputStream(OSCApp.class.getResource("service/" + this.name + ".wav"));
+			audioIn = AudioSystem.getAudioInputStream(OSCApp.class.getResource("sound/" + this.name + ".wav"));
 			Clip clip = AudioSystem.getClip();
 			clip.open(audioIn);
 			sampleLenght = clip.getMicrosecondLength();
