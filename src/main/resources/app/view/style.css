@@ -1,14 +1,7 @@
-/*noinspection ALL*/
 .tree-cell:selected {
     -fx-font-weight: bold ;
 }
 
-.tree-view, .tree-cell {
-    -fx-background-color: #303030 ;
-    -fx-text-fill: white ;
-}
-
-/*noinspection ALL*/
 .tree-cell:expanded {
     -fx-background-color: #505050 ;
 }
@@ -19,6 +12,8 @@
     -fx-font-weight: bold ;
 }
 .tree-cell {
+    -fx-background-color: #303030 ;
+    -fx-text-fill: white ;
     -fx-font: 12px "Tahoma";
     -fx-padding: 0.75em 0em 0.75em 0em ;
 }
@@ -27,4 +22,12 @@
     -fx-background-color: white;
     -fx-padding: 0.333333em 0.229em 0.333333em 0.229em; /* 4 */
     -fx-shape: "M 0 -3.5 L 4 0 L 0 3.5 z";
+}
+
+.root {
+    -fx-background-color: #707070;
+}
+
+.vbox {
+    -fx-border: #707070;
 }

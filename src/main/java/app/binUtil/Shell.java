@@ -1,10 +1,10 @@
-package app.comLoadUtil;
+package app.binUtil;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
 /**
- * app.comLoadUtil Created by Pierre-Alexandre Adamski on 02/02/2016.
+ * app.binUtil Created by Pierre-Alexandre Adamski on 02/02/2016.
  */
 public class Shell {
 
