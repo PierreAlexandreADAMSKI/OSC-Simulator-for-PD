@@ -1,51 +1,89 @@
 package app.service;
 
 import app.OSCApp;
+import javafx.event.Event;
+import javafx.scene.control.TreeItem;
 
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
 
 /**
  * app.service Created by Pierre-Alexandre Adamski on 02/02/2016.
  */
-public class TreeTableService {
-	private final Path root = Paths.get(OSCApp.class.getResource("sound").getPath());
 
-	public Map<String, List<String>> getWavFolders() {
-		Map<String, List<String>> wavFolders = new HashMap<>();
-		try {
-			DirectoryStream<Path> stream = Files.newDirectoryStream(root);
-			for (Path entry : stream) {
-				if (entry.getNameCount() > 0){
-					final DirectoryStream<Path> subStream = Files.newDirectoryStream(entry);
-					final List<String> files = new ArrayList<>();
-					for (Path subEntry : subStream){
-						if (getExtension(subEntry).equals(".wav")){
-							files.add(subEntry.getFileName().toString());
-						}
-					}
-					if (!files.isEmpty()){
-						wavFolders.put(entry.getFileName().toString(), files);
-					}
-				}
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return wavFolders;
-	}
 
+public class TreeTableService extends TreeItem<String> {
+
+	public final static Path rootPath = Paths.get(OSCApp.class.getResource("sound").getPath());
 
 	protected String getExtension(Path entry) {
 		String fileName = entry.getFileName().toString();
 		return fileName.substring(fileName.lastIndexOf("."));
 	}
+
+	//this stores the full path to the file or directory
+
+	private String fullPath;
+
+	public String getFullPath() {
+		return (this.fullPath);
+	}
+
+
+	private boolean isDirectory;
+
+	public boolean isDirectory() {
+		return (this.isDirectory);
+	}
+
+
+	public TreeTableService(Path file) {
+
+		super(file.toString());
+
+		this.fullPath = file.toString();
+
+		//test if this is a directory and set the icon
+
+		this.isDirectory = Files.isDirectory(file);
+
+		//set the value
+
+		if (!fullPath.endsWith(File.separator)) {
+			//set the value (which is what is displayed in the tree)
+			String value = file.toString();
+			int indexOf = value.lastIndexOf(File.separator);
+			if (indexOf > 0) {
+				this.setValue(value.substring(indexOf + 1));
+			} else {
+				this.setValue(value);
+			}
+		}
+
+		this.addEventHandler(TreeItem.branchExpandedEvent(), event1 -> {
+
+			TreeTableService source = (TreeTableService) ((Event) event1).getSource();
+
+			try {
+				if (source.getChildren().isEmpty()) {
+					Path path = Paths.get(source.getFullPath());
+					BasicFileAttributes attribs = Files.readAttributes(path, BasicFileAttributes.class);
+					if (attribs.isDirectory()) {
+						DirectoryStream<Path> dir = Files.newDirectoryStream(path);
+						for (Path file1 : dir) {
+							if (getExtension(file1.getFileName()).equals("wav")) {
+								TreeTableService treeNode = new TreeTableService(file1);
+								source.getChildren().add(treeNode);
+							}
+						}
+					}
+				}
+			} catch (IOException x) {
+				x.printStackTrace();
+			}
+		});
+	}
 }
+

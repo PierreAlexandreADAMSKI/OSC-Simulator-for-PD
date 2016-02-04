@@ -3,24 +3,22 @@ package app.view;
 import app.OSCApp;
 import app.exceptions.OSCReceiveException;
 import app.exceptions.OSCSendException;
-import app.service.OSCService;
-import app.service.SoundService;
-import app.service.StageService;
-import app.service.Way;
-import com.illposed.osc.OSCMessage;
-import com.illposed.osc.OSCPort;
-import com.illposed.osc.OSCPortIn;
-import javafx.beans.property.ReadOnlyStringWrapper;
-import javafx.beans.value.ObservableValue;
+import app.service.*;
+import app.service.TreeTableService;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import javafx.util.Callback;
 
 import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 
 /**
@@ -40,7 +38,10 @@ public class Controller {
 	@FXML
 	private MenuItem stringItem;
 	@FXML
-	private TreeTableView<String> table;
+	private VBox treeBox;
+
+	private TreeItem<String> rootNode = new TreeItem<>("samples");
+
 
 	@FXML
 	private void initialize() {
@@ -59,23 +60,43 @@ public class Controller {
 		};
 		tagField.setOnKeyPressed(eventHandler);
 		arg0Field.setOnKeyPressed(eventHandler);
+		setupTree();
 	}
 
-	private void setTable(Map<String, List<String>> map) {
-		final List<TreeItem<String>> rootList = new ArrayList<>();
-		Set<Map.Entry<String, List<String>>> set = map.entrySet();
-		for (Map.Entry<String, List<String>> roots : set) {
-			final TreeItem<String> rootItem = new TreeItem<>(roots.getKey());
-			rootItem.setExpanded(true);
-			for (String root : roots.getValue()) {
-				rootItem.getChildren().add(new TreeItem<>(root));
-			}
-			rootList.add(rootItem);
+	private void setupTree() {
+		TreeView<String> treeView;
+
+		treeBox.setPadding(new Insets(5, 5, 5, 5));
+		treeBox.setSpacing(5);
+
+		try {
+			setupRootNode(Files.newDirectoryStream(TreeTableService.rootPath), this.rootNode);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-		final TreeTableColumn<String, String> arguments = new TreeTableColumn<>("arguments");
-		arguments.setCellValueFactory(p -> new ReadOnlyStringWrapper(p.getValue().getValue()));
-		table.setRoot(rootList.get(0));
-		table.getColumns().add(arguments);
+
+		this.rootNode.setExpanded(true);
+
+		treeView = new TreeView<>(this.rootNode);
+		treeBox.getChildren().addAll(new Label("Samples Selection :"), treeView);
+		VBox.setVgrow(treeView, Priority.ALWAYS);
+	}
+
+	private void setupRootNode(DirectoryStream<Path> stream, TreeItem<String> root){
+		for (Path name : stream) {
+			TreeTableService treeNode = new TreeTableService(name);
+			if (treeNode.isDirectory()){
+				TreeItem<String> subRoot = new TreeItem<>(name.getFileName().toString());
+				try {
+					setupRootNode(Files.newDirectoryStream(name), subRoot);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				root.getChildren().add(subRoot);
+			} else {
+				root.getChildren().add(treeNode);
+			}
+		}
 	}
 
 	private Object currentInstance;
