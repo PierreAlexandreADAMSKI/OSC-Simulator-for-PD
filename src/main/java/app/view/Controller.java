@@ -49,11 +49,14 @@ public class Controller {
 	@FXML
 	private void initialize() {
 		portText.setText(String.valueOf(""));
-		integerItem.setOnAction(event -> currentInstance = 0);
-		floatItem.setOnAction(event -> currentInstance = 0.f);
-		stringItem.setOnAction(event -> currentInstance = "");
-		EventHandler<KeyEvent> eventHandler = event -> {
-			if (Objects.equals(event.getCode(), KeyCode.ENTER)) {
+
+		integerItem.setOnAction(clickEvent -> currentInstance = 0);
+		floatItem.setOnAction(clickEvent -> currentInstance = 0.f);
+		stringItem.setOnAction(clickEvent -> currentInstance = "");
+
+
+		EventHandler<KeyEvent> eventHandler = keyEvent -> {
+			if (Objects.equals(keyEvent.getCode(), KeyCode.ENTER)) {
 				try {
 					handleSendButton();
 				} catch (OSCSendException | OSCReceiveException e) {
@@ -63,6 +66,7 @@ public class Controller {
 		};
 		tagField.setOnKeyPressed(eventHandler);
 		arg0Field.setOnKeyPressed(eventHandler);
+
 
 		setupTree();
 	}
@@ -83,8 +87,16 @@ public class Controller {
 		final TreeView<String> treeView = new TreeView<>(this.rootNode);
 
 		treeView.setOnMouseClicked(mouseEvent -> {
-			if(mouseEvent.getClickCount() == 2)
-			{
+			if(mouseEvent.getClickCount() == 2) {
+				TreeItem<String> item = treeView.getSelectionModel().getSelectedItem();
+				if (TreeTableService.getExtension(Paths.get(item.getValue())) != null) {
+					arg0Field.setText(item.getValue().split(Pattern.quote("."))[0]);
+				}
+			}
+		});
+
+		treeView.setOnKeyPressed(keyEvent -> {
+			if(Objects.equals(keyEvent.getCode(), KeyCode.ENTER)) {
 				TreeItem<String> item = treeView.getSelectionModel().getSelectedItem();
 				if (TreeTableService.getExtension(Paths.get(item.getValue())) != null) {
 					arg0Field.setText(item.getValue().split(Pattern.quote("."))[0]);
