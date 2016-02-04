@@ -7,7 +7,7 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="368.0" prefWidth="357.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.view.Controller">
     <children>
-        <Button fx:id="sendButton" layoutX="257.0" layoutY="106.0" mnemonicParsing="false" onAction="#handleSendButton" prefHeight="36.0" prefWidth="88.0" text="Send" />
+        <Button layoutX="257.0" layoutY="106.0" mnemonicParsing="false" onAction="#handleSendButton" prefHeight="36.0" prefWidth="88.0" text="Send" />
         <TextFlow layoutX="17.0" layoutY="14.0" prefHeight="18.0" prefWidth="324.0" textAlignment="CENTER">
             <children>
                 <Text strokeType="OUTSIDE" strokeWidth="0.0" text="OSC Applet setup on loaclhost on UDP Port : " wrappingWidth="250.22763061523438">

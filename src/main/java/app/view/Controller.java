@@ -11,6 +11,7 @@ import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -19,7 +20,9 @@ import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * app.app.view Created by Pierre-Alexandre Adamski on 30/01/2016.
@@ -60,11 +63,11 @@ public class Controller {
 		};
 		tagField.setOnKeyPressed(eventHandler);
 		arg0Field.setOnKeyPressed(eventHandler);
+
 		setupTree();
 	}
 
 	private void setupTree() {
-		TreeView<String> treeView;
 
 		treeBox.setPadding(new Insets(5, 5, 5, 5));
 		treeBox.setSpacing(5);
@@ -77,7 +80,18 @@ public class Controller {
 
 		this.rootNode.setExpanded(true);
 
-		treeView = new TreeView<>(this.rootNode);
+		final TreeView<String> treeView = new TreeView<>(this.rootNode);
+
+		treeView.setOnMouseClicked(mouseEvent -> {
+			if(mouseEvent.getClickCount() == 2)
+			{
+				TreeItem<String> item = treeView.getSelectionModel().getSelectedItem();
+				if (TreeTableService.getExtension(Paths.get(item.getValue())) != null) {
+					arg0Field.setText(item.getValue().split(Pattern.quote("."))[0]);
+				}
+			}
+		});
+
 		treeBox.getChildren().addAll(new Label("Samples Selection :"), treeView);
 		VBox.setVgrow(treeView, Priority.ALWAYS);
 	}

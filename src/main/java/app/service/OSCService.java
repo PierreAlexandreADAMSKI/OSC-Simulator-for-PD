@@ -35,7 +35,6 @@ public class OSCService {
 		if (way == Way.IN) {
 			portIn = new OSCPortIn(UDP_PORT);
 		}
-
 		finalize();
 	}
 

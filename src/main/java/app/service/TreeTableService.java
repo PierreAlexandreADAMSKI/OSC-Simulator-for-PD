@@ -2,7 +2,9 @@ package app.service;
 
 import app.OSCApp;
 import javafx.event.Event;
+import javafx.event.EventType;
 import javafx.scene.control.TreeItem;
+import javafx.scene.input.MouseEvent;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,9 +20,13 @@ public class TreeTableService extends TreeItem<String> {
 
 	public final static Path rootPath = Paths.get(OSCApp.class.getResource("sound").getPath());
 
-	protected String getExtension(Path entry) {
+	public static String getExtension(Path entry) {
 		String fileName = entry.getFileName().toString();
-		return fileName.substring(fileName.lastIndexOf("."));
+		if (fileName.lastIndexOf(".")!=-1) {
+			return fileName.substring(fileName.lastIndexOf("."));
+		}else {
+			return null;
+		}
 	}
 
 	//this stores the full path to the file or directory
@@ -73,7 +79,7 @@ public class TreeTableService extends TreeItem<String> {
 					if (attribs.isDirectory()) {
 						DirectoryStream<Path> dir = Files.newDirectoryStream(path);
 						for (Path file1 : dir) {
-							if (getExtension(file1.getFileName()).equals("wav")) {
+							if (this.getExtension(file1.getFileName()).equals("wav")) {
 								TreeTableService treeNode = new TreeTableService(file1);
 								source.getChildren().add(treeNode);
 							}
